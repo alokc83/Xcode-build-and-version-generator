@@ -17,91 +17,91 @@
 #CHECKING WHICH info.plist need to be used
 if [[ -e InfoT2.plist ]]
 then
-plistFile="InfoT2.plist"
+  plistFile="InfoT2.plist"
 else
-plistFile="${INFOPLIST_FILE}"
+  plistFile="${INFOPLIST_FILE}"
 fi
 
 MONTH=`date | awk '{print $2}'`
 
 case "$MONTH" in
-'Jan' | [Jj][Aa][Na] )
-MONTHNUMBER="01"
-;;
-'Feb' |[Ff][Ee][Bb])
-MONTHNUMBER="02"
-;;
-'Mar' |[Mm][Aa][Rr])
-MONTHNUMBER="03"
-;;
-'Apr' |[Aa][Pp][Rr])
-MONTHNUMBER="04"
-;;
-'May' |[Mm][Aa][Yy])
-MONTHNUMBER="05"
-;;
-'Jun' |[Jj][Uu][Nn])
-MONTHNUMBER="06"
-;;
-'Jul' |[Jj][Uu][Ll])
-MONTHNUMBER="07"
-;;
-'Aug' |[Aa][Uu][Gg])
-MONTHNUMBER="08"
-;;
-'Sep' |[Ss][Ee][Pp])
-MONTHNUMBER="09"
-;;
-'Oct' |[Oo][Cc][Tt])
-MONTHNUMBER="10"
-;;
-'Nov' |[Nn][Oo][Vv])
-MONTHNUMBER="11"
-;;
-'Dec' |[Dd][Ee][Cc])
-MONTHNUMBER="12"
-;;
+  'Jan' | [Jj][Aa][Na] )
+    MONTHNUMBER="01"
+  ;;
+  'Feb' |[Ff][Ee][Bb])
+    MONTHNUMBER="02"
+  ;;
+  'Mar' |[Mm][Aa][Rr])
+    MONTHNUMBER="03"
+  ;;
+  'Apr' |[Aa][Pp][Rr])
+    MONTHNUMBER="04"
+  ;;
+  'May' |[Mm][Aa][Yy])
+    MONTHNUMBER="05"
+  ;;
+  'Jun' |[Jj][Uu][Nn])
+    MONTHNUMBER="06"
+  ;;
+  'Jul' |[Jj][Uu][Ll])
+    MONTHNUMBER="07"
+  ;;
+  'Aug' |[Aa][Uu][Gg])
+    MONTHNUMBER="08"
+  ;;
+  'Sep' |[Ss][Ee][Pp])
+    MONTHNUMBER="09"
+  ;;
+  'Oct' |[Oo][Cc][Tt])
+    MONTHNUMBER="10"
+  ;;
+  'Nov' |[Nn][Oo][Vv])
+    MONTHNUMBER="11"
+  ;;
+  'Dec' |[Dd][Ee][Cc])
+    MONTHNUMBER="12"
+  ;;
 esac
 
 DATE=`date | awk '{print $3}'`
 echo "Date = $DATE"
 
 case $DATE in
-1 )
-DATE="01"
-;;
-
-2 )
-DATE="02"
-;;
-
-3 )
-DATE="03"
-;;
-
-4 )
-DATE="04"
-;;
-
-5)
-DATE="05"
-;;
-
-6 )
-DATE="06"
-;;
-
-7 )
-DATE="07"
-;;
-
-8 )
-DATE="08"
-;;
-
-9 )
-DATE="09"
-;;
+  1 )
+    DATE="01"
+  ;;
+  
+  2 )
+    DATE="02"
+  ;;
+  
+  3 )
+    DATE="03"
+  ;;
+  
+  4 )
+    DATE="04"
+  ;;
+  
+  5)
+    DATE="05"
+  ;;
+  
+  6 )
+    DATE="06"
+  ;;
+  
+  7 )
+    DATE="07"
+  ;;
+  
+  8 )
+    DATE="08"
+  ;;
+  
+  9 )
+    DATE="09"
+  ;;
 esac
 
 YEAR=`date | awk '{print $6}'`
