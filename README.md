@@ -1,6 +1,3 @@
-Xcode-build-and-version-generator
-=================================
-
 #Xcode-build-and-version-generator
 
 ####What does it do ?
