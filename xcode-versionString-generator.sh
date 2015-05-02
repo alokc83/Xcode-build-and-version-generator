@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash 
 # xcode-version-generator.sh
-# @desc Auto-increment the version number (only) when a project is archived for export.
+# @desc Auto-increment the version number as when you want it to.
 # @usage
 # 1. Select: your Target in Xcode
 # 2. Select: Build Phases Tab
@@ -22,10 +22,10 @@
 ##################################################################################
 
 ## ONLY UNCOMMENT BELOW LINE FOR THE PURPOSE OF DEBUGGING
-#set -x
+set -x
 
 ######### DEBUG MSG function YES to Enable, No to Disable
-DEBUG="YES" # Set DEBUG YES(Enable) or NO(Disable)
+DEBUG="NO" # Set DEBUG YES(Enable) or NO(Disable)
 
 ######### SYMBOLIC CONSTANT
 blackFlag="⚑"
@@ -115,34 +115,40 @@ addPropertyToList()
   debugMsg "end of Add Property function."
 } #End of fucntion
 
+versionValues()
+{
+  echo "Version values as follows:"
+  echo "Current version $VERSIONSTRING"
+  echo "New version $NEWVERSIONSTRING"
+  echo "Previous version $PVERSIONSTRING"
+} #End of funtion
 
 ##### FUNCTION TO UPDATE plist
 updatePlist()
 {
   debugMsg "updatePlist fucntion starts."
+	NEWVERSIONSTRING=`echo $MAJORVERSION.$MINORVERSION.$REVISION`
+	versionValues ## check verion values
+	read versionValue
   #/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $NEWVERSIONSTRING" "${PROJECT_DIR}/${INFOPLIST_FILE}"
-  NEWVERSIONSTRING=`echo $MAJORVERSION.$MINORVERSION.$REVISION`
   /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $NEWVERSIONSTRING" "$plistFile"
   debugMsg "Exit Code is $?"
   echo "Setting CFBundleShortVersionString property to $NEWVERSIONSTRING."
   
   #Setting up Previous Version String
-  PVERSIONSTRING=`echo $PMAJORVERSION.$PMINORVERSION.$(($REVISION - 1))`
+  if [[ REVISION -eq 0 ]]
+  then
+	PVERSIONSTRING=`echo $PMAJORVERSION.$PMINORVERSION.$((500 - 1))`
+  else
+	PVERSIONSTRING=`echo $PMAJORVERSION.$PMINORVERSION.$(($REVISION - 1))`
+  fi
+  
   /usr/libexec/PlistBuddy -c "Set :CustomPreviousBundleShortVersionString $PVERSIONSTRING" "$plistFile"
   debugMsg "Exit Code is $?"
   echo "Setting CustomPreviousBundleShortVersionString property to $PVERSIONSTRING."
   
   debugMsg "updatePlist function ends."
 }  #end of function
-
-
-versionValues()
-{
-  echo "Version values as follows:"
-  echo "Current version $VERSIONSTRING"
-  echo "New version NEWVERSIONSTRING"
-  echo "Previous version $PVERSIONSTRING"
-} #End of funtion
 
 whatsUpdate()
 {
@@ -184,13 +190,18 @@ debugMsg "Actual Proj Dir = $PROJDIR"
 debugMsg "Actual info-plist location = $INFOPLIST"
 
 #### DEBUG BLOCK ENDS ##########
+################################
 
+####################################
+## reading values from plist file ##
+####################################
 VERSIONSTRING=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$plistFile")
 PVERSIONSTRING=$(/usr/libexec/PlistBuddy -c "Print CustomPreviousBundleShortVersionString" "$plistFile")
+# checking if P_VERSIONING_STRING return zero
 RETURNPVERSIONSTRING=$?
 debugMsg "Return code for version built $RETURNPVERSIONSTRING"
 debugMsg "$PVERSIONSTRING"
-read myname
+##read myname
 VERSIONBUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$plistFile")
 PVERSIONBUILD=$(/usr/libexec/PlistBuddy -c "Print CustomPreviousBundleVersion" "$plistFile")
 RETURNPVERSIONBUID=$?
@@ -199,11 +210,20 @@ debugMsg "Return code for previous build $RETURNPVERSIONBUID"
 debugMsg "Version_string = $VERSIONSTRING, Previous Version=$PVERSIONSTRING"
 debugMsg "Version Build = $VERSIONBUILD, Previous Build = $PVERSIONBUILD"
 
+########
+### Extract version call here 
+########
+debugMsg "extracting version values here"
+extractVersionNumbers
+extractPreviousVersionNumbers
+versionValues
+read varsions
 
 if [[ $RETURNPVERSIONSTRING -ne 0 ]] #Previous version property does not exists
 then
   echo "Previous version string does not exists"
   #### AUTOMATIC PROPERTY CREATETOR CODE
+  ####
   debugMsg "ARGUMENT TO BE PASSED $VERSIONSTRING, $plistFile"
   addPropertyToList "CustomPreviousBundleShortVersionString" "String" "$VERSIONSTRING"
   debugMsg "Write process is done, return code is $?. Zero means property created with value $VERSIONSTRING"
@@ -212,22 +232,29 @@ else
   debugMsg "Previous version number exists, it is $PVERSIONSTRING."
   extractVersionNumbers #Extract Major, Minor and Revision from Version String
   extractPreviousVersionNumbers #Extract Major, Minor and Revision from PRevious Version String
-  
-  if [[ $MINORVERSION -gt $PMINORVERSION ]]
+
+  if [[ REVISION -eq 500 ]]
   then
-    debugMsg "Minor version is incremented. Setting revision to Zero"
-    REVISION=0
-    updatePlist #Function Call : updatePlist
-    #versionValues #Function Call
-  else
-    PVERSIONSTRING=$VERSIONSTRING
-    debugMsg "Incrementing Revision By One"
-    REVISION=$(($REVISION + 1))
-    updatePlist #Function Call
-    #versionValues #Function Call
+debugMsg "alok_this_is MINORVERSION $MINORVERSION"
+	PMINORVERSION=`expr $MINORVERSION` 
+	MINORVERSION=$((MINORVERSION + 1))
+	debugMsg "alok_this_is MINORVERSION $MINORVERSION"
+	PREVISION=$((REVISION))
+	REVISION=0
+	updatePlist #Function Call
+	if [[ $DEBUG -eq `YES`]]
+		then
+   		versionValues #Function Call
+	fi
     debugMsg "new = $NEWVERSIONSTRING, Previous = $PVERSIONSTRING"
-  fi
-  
+  else
+	PVERSIONSTRING=$VERSIONSTRING
+	debugMsg "Incrementing Revision By One"
+	REVISION=$(($REVISION + 1))
+	updatePlist #Function Call
+    versionValues #Function Call
+    debugMsg "new = $NEWVERSIONSTRING, Previous = $PVERSIONSTRING, current = $VERSIONSTRING"	
+  fi  
 fi
 
 #### SYNCING Current and Previous version String
@@ -239,10 +266,12 @@ else
   echo "Current and previous version string are in sync. No action needed"
 fi
 
-if [[ $REVISION -gt 0 && $REVISION < $PREVISION ]]
-then
-  PREVISION=$(($REVISION - 1))
-fi
+#if [[ $REVISION -gt 0 && $REVISION < $PREVISION ]]
+#then
+#  PREVISION=$(($REVISION - 1))
+#else
+	
+#fi
 
 ######### CHECK IF PREVIOUS BUID EXISTS OR NOT #############
 
