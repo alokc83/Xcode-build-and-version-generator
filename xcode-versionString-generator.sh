@@ -1,7 +1,8 @@
 #!/bin/bash 
 # xcode-version-generator.sh
-# @desc Auto-increment the version number as when you want it to.
-# @usage
+# @desc Auto-increment the version number as when you want it to. I have made is ready for git submodule.
+#all you need to create dir supporting_files/ clone repo in that then 
+# @usage 1
 # 1. Select: your Target in Xcode
 # 2. Select: Build Phases Tab
 # 3. Select: Add Build Phase -> Add Run Script
@@ -9,6 +10,17 @@
 # 5. Check the checkbox "Run script only when installing"
 # 6. Drag the "Run Script" below "Link Binaries With Libraries"
 # 7. Insure your starting version number is in SemVer format (e.g. 1.0.0)
+
+# @usage 2
+# 1. Create dir supporting file in your project
+# 2. make this repo as submodule of your project/ (find git submodule docs)
+# 3. Select: your Target in Xcode, Select: Build Phases Tab, Select: Add Build Phase -> Add Run Script
+# 4. Paste code below in to new "Run Script" section
+# 5. #This is to run xcode-version-generator as submodule
+#		${SRCROOT}/<path where you cloned>/xcode-build-number-generator.sh
+#		${SRCROOT}/<path where you cloned>/xcode-versionString-generator.sh
+# 5. Check the checkbox "Run script only when installing" if you want to increase when installed on device
+# 6. Insure your starting version number is in SemVer format (e.g. 1.0.0)
 
 
 ############################FUNCTIONS PRESENT IN SCRIPT ##########################
@@ -22,7 +34,7 @@
 ##################################################################################
 
 ## ONLY UNCOMMENT BELOW LINE FOR THE PURPOSE OF DEBUGGING
-set -x
+#set -x
 
 ######### DEBUG MSG function YES to Enable, No to Disable
 DEBUG="NO" # Set DEBUG YES(Enable) or NO(Disable)
@@ -129,7 +141,7 @@ updatePlist()
   debugMsg "updatePlist fucntion starts."
 	NEWVERSIONSTRING=`echo $MAJORVERSION.$MINORVERSION.$REVISION`
 	versionValues ## check verion values
-	read versionValue
+	#read versionValue
   #/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $NEWVERSIONSTRING" "${PROJECT_DIR}/${INFOPLIST_FILE}"
   /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $NEWVERSIONSTRING" "$plistFile"
   debugMsg "Exit Code is $?"
@@ -216,8 +228,8 @@ debugMsg "Version Build = $VERSIONBUILD, Previous Build = $PVERSIONBUILD"
 debugMsg "extracting version values here"
 extractVersionNumbers
 extractPreviousVersionNumbers
-versionValues
-read varsions
+#versionValues
+#read varsions
 
 if [[ $RETURNPVERSIONSTRING -ne 0 ]] #Previous version property does not exists
 then
@@ -232,29 +244,26 @@ else
   debugMsg "Previous version number exists, it is $PVERSIONSTRING."
   extractVersionNumbers #Extract Major, Minor and Revision from Version String
   extractPreviousVersionNumbers #Extract Major, Minor and Revision from PRevious Version String
-
   if [[ REVISION -eq 500 ]]
   then
-debugMsg "alok_this_is MINORVERSION $MINORVERSION"
+	debugMsg "alok_this_is MINORVERSION $MINORVERSION"
 	PMINORVERSION=`expr $MINORVERSION` 
 	MINORVERSION=$((MINORVERSION + 1))
 	debugMsg "alok_this_is MINORVERSION $MINORVERSION"
 	PREVISION=$((REVISION))
 	REVISION=0
 	updatePlist #Function Call
-	if [[ $DEBUG -eq `YES`]]
-		then
-   		versionValues #Function Call
-	fi
+   	#versionValues #Function Call
     debugMsg "new = $NEWVERSIONSTRING, Previous = $PVERSIONSTRING"
   else
 	PVERSIONSTRING=$VERSIONSTRING
 	debugMsg "Incrementing Revision By One"
 	REVISION=$(($REVISION + 1))
 	updatePlist #Function Call
-    versionValues #Function Call
+    #versionValues #Function Call
     debugMsg "new = $NEWVERSIONSTRING, Previous = $PVERSIONSTRING, current = $VERSIONSTRING"	
-  fi  
+  fi 
+ 
 fi
 
 #### SYNCING Current and Previous version String
