@@ -12,18 +12,18 @@
 # 7. Insure your starting version number is in SemVer format (e.g. 1.0.0)
 
 # @usage 2
-# 1. Create dir supporting file in your project
+# 1. Create dir 'supporting_files' in your project root dir
 # 2. make this repo as submodule of your project/ (find git submodule docs)
 # 3. Select: your Target in Xcode, Select: Build Phases Tab, Select: Add Build Phase -> Add Run Script
 # 4. Paste code below in to new "Run Script" section
 # 5. #This is to run xcode-version-generator as submodule
-#		${SRCROOT}/<path where you cloned>/xcode-build-number-generator.sh
-#		${SRCROOT}/<path where you cloned>/xcode-versionString-generator.sh
+#		${SRCROOT}/supporting_files/xcode-build-number-generator.sh
+#		${SRCROOT}/supporting_files/xcode-versionString-generator.sh
 # 5. Check the checkbox "Run script only when installing" if you want to increase when installed on device
 # 6. Insure your starting version number is in SemVer format (e.g. 1.0.0)
 
 
-############################FUNCTIONS PRESENT IN SCRIPT ##########################
+#####################  FUNCTIONS available IN SCRIPT ##########################
 #debugMsg() : print the debug msg all over in script and turn them off with single switch
 #addPropertyToList() : Function to add propert to plist takes 3 agrs prop name, type and value
 #updatePlist() : updating the plist if properties already exists
@@ -34,10 +34,13 @@
 ##################################################################################
 
 ## ONLY UNCOMMENT BELOW LINE FOR THE PURPOSE OF DEBUGGING
-#set -x
+set -x
 
 ######### DEBUG MSG function YES to Enable, No to Disable
 DEBUG="NO" # Set DEBUG YES(Enable) or NO(Disable)
+
+####### Auto minor increment Cycle
+MAX_REVISION=100
 
 ######### SYMBOLIC CONSTANT
 blackFlag="⚑"
@@ -150,7 +153,10 @@ updatePlist()
   #Setting up Previous Version String
   if [[ REVISION -eq 0 ]]
   then
-	PVERSIONSTRING=`echo $PMAJORVERSION.$PMINORVERSION.$((500 - 1))`
+	PVERSIONSTRING=`echo $PMAJORVERSION.$(($PMINORVERSION)).$(($MAX_REVISION - 1))`
+  elif [ REVISION -eq 1 ]
+  then
+	PVERSIONSTRING=`echo $PMAJORVERSION.$(($PMINORVERSION + 1)).$PREVISION`
   else
 	PVERSIONSTRING=`echo $PMAJORVERSION.$PMINORVERSION.$(($REVISION - 1))`
   fi
@@ -243,10 +249,10 @@ then
 else
   debugMsg "Previous version number exists, it is $PVERSIONSTRING."
   extractVersionNumbers #Extract Major, Minor and Revision from Version String
-  extractPreviousVersionNumbers #Extract Major, Minor and Revision from PRevious Version String
-  if [[ REVISION -eq 500 ]]
+  #extractPreviousVersionNumbers #Extract Major, Minor and Revision from PRevious Version String
+  if [[ REVISION -eq $MAX_REVISION ]]
   then
-	debugMsg "alok_this_is MINORVERSION $MINORVERSION"
+	debugMsg "This is Minor MINORVERSION $MINORVERSION"
 	PMINORVERSION=`expr $MINORVERSION` 
 	MINORVERSION=$((MINORVERSION + 1))
 	debugMsg "alok_this_is MINORVERSION $MINORVERSION"
@@ -271,6 +277,7 @@ if [[ $MAJORVERSION -ne $PMAJORVERSION || $MINORVERSION -ne $PMINORVERSION ]]
 then
   echo "Current and previous version strings are out of sync. Manual override needed"
   echo "Please refere to documentation for manual override"
+
 else
   echo "Current and previous version string are in sync. No action needed"
 fi
