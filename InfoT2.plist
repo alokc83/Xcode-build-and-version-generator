@@ -15,13 +15,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.6.5</string>
+	<string>1.6.8</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>20150501</string>
 	<key>CustomPreviousBundleShortVersionString</key>
-	<string>1.6.4</string>
+	<string>1.6.7</string>
 	<key>CustomPreviousBundleVersion</key>
 	<string>20150501</string>
 	<key>Fabric</key>
