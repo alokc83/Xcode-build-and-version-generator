@@ -1,4 +1,4 @@
- #This script has moved to following link : 
+ # This script has moved to following link : 
  https://github.com/MtAden/xcodeSciptPhase
  
  All Futher development would be on that fork. You can find more goodies for your xcode project there. 
